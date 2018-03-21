@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="socket.io/socket.io.js"></script>
+  </head>
+  <body>
+<script>
+$(document).ready(function () {
+  $("#chatbox").hide();
+  var socket = io("http://localhost:3309");
+  //alert('concac');
+  $('#taikhoan').keypress(function (e) {
+    if (e.which == 13) {
+      socket.emit("dangky",$("#taikhoan").val());
+
+
+    }
+  });
+  $("#dangky").click(function () {
+    socket.emit("dangky",$("#taikhoan").val());
+
+  });
+  $('#noidung').keypress(function (e) {
+    if (e.which == 13) {
+      socket.emit("Client-send-data",$("#noidung").val());
+      $("#noidung").val("");
+
+    }
+  });
+  $("#send").click(function () {
+    socket.emit("Client-send-data",$("#noidung").val());
+    $("#noidung").val("");
+
+  });
+  socket.on("Server-send-data",function(data) {
+    $("#hienthi").append("<p>"+data+"</p>");
+  })
+  socket.on("online",function(data) {
+    $("#online").html("những người đang online: "+data);
+  })
+  socket.on("dangky",function(data) {
+    if(data == 0)
+    alert("Tên đăng nhập đã có người sự dụng");
+    else{
+      alert("đăng ký thành công");
+      $("#dk").remove();
+      $("#chatbox").show();
+    }
+  })
+})
+
+</script>
+<div id="online"></div>
+<div id="hienthi"></div>
+<div id="dk">
+<input type="text" id="taikhoan"/>
+<button id="dangky">Đăng Ký</button>
+</div>
+<div id="chatbox">
+<input type="text" id="noidung"/>
+<button id="send">Chat</button>
+</div>
+  </body>
+</html>
